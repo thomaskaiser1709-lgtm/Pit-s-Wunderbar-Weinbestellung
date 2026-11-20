@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pits WunderBar – Weine bestellen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:wght@500;600;700&family=Lato:wght@400;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+[hidden]{display:none!important}
+.adm{max-width:1280px;margin:16px auto 0;padding:0 16px}.adm table{width:100%;border-collapse:collapse;font-size:13px}.adm td,.adm th{border-bottom:1px solid var(--line);padding:5px;text-align:left}.adm .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:10px 0}.adm .sc{max-height:320px;overflow:auto}.mini{padding:3px 9px;font-size:12px}.lk{display:flex;gap:6px}.lk .btn{flex:1;font-size:12px;padding:6px}
+:root{--bg:#f1e8d8;--card:#fbf6ec;--ink:#2e231d;--mut:#7a6a5c;--navy:#2b1f1b;--gold:#c0562f;--line:#e0d2ba;--hd:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1512;--card:#2a201b;--ink:#f1e6d4;--mut:#b3a28f;--navy:#120d0b;--gold:#e08a52;--line:#43342b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1512;--card:#2a201b;--ink:#f1e6d4;--mut:#b3a28f;--navy:#120d0b;--gold:#e08a52;--line:#43342b;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Lato,system-ui,sans-serif}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif;font-weight:600;margin:0}
+.top{background:var(--navy);color:#fff;font-size:12px;padding:6px 20px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hero{background:radial-gradient(ellipse at 50% 0,#4a2e22,var(--navy) 70%);color:#fff;text-align:center;padding:48px 20px}
+.hero small{letter-spacing:.3em;color:#e9b36b;font-size:13px}.hero h1{font:700 clamp(46px,9vw,84px)/1 Caveat,"Playfair Display",cursive;margin:6px 0;letter-spacing:.02em}.hero .sub{font-style:italic;color:#e9b36b;margin-bottom:10px}
+.hero p{max-width:620px;margin:0 auto;opacity:.9}.hero em{color:#e9b36b}.hero{border-bottom:4px double var(--gold)}
+main{max-width:1280px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media(max-width:960px){main{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit}
+.wide{grid-column:1/-1}.row{display:flex;gap:8px;align-items:end}
+.chk{display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)}.chk input{width:auto}
+.bar{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.card.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.card svg{height:110px;align-self:center}.card h3{font-size:22px;line-height:1.15}
+.w{color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:700}.card{border-radius:10px}.panel{border-radius:10px}
+.tags{display:flex;gap:4px;flex-wrap:wrap}.tags span{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:1px 8px;color:var(--mut)}
+.d{font-size:13px;color:var(--mut);flex:1}.pr{font-family:"Playfair Display",serif;font-size:26px;font-weight:700}
+.pr small{font:12px Lato;color:var(--mut)}.stock{font-size:11px;color:var(--mut)}
+.qty{display:flex;align-items:center;gap:6px}.qty button{width:32px;height:32px}.qty b{min-width:24px;text-align:center}
+button,.btn{cursor:pointer;border:1px solid var(--gold);background:transparent;color:var(--ink);border-radius:4px;font:inherit;padding:8px 14px}
+.btn{display:block;text-align:center;text-decoration:none;background:var(--navy);color:#fff;border-color:var(--navy);letter-spacing:.06em;margin-top:8px}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}.btn[aria-disabled=true]{opacity:.45}
+aside{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 24px);overflow:auto}
+@media(max-width:960px){aside{position:static;max-height:none}}
+aside h2{font-size:26px;margin-bottom:8px}.it{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.sum{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}.tot{font-family:"Playfair Display",serif;font-size:26px;font-weight:700}
+.note{font-size:12px;color:var(--mut);margin-top:6px}.warn{color:#b3472f}
+textarea{font:12px/1.4 monospace;height:150px}footer{background:var(--navy);color:#fff;padding:24px 20px;text-align:center;font-size:13px}footer b{color:var(--gold)}
+</style></head><body>
+<div class="top"><span>Café – Bodega – Allerlei</span><span>Mobil: +49 (0)1738042013</span></div>
+<header class="hero"><small>KUNST · GENUSS · GEMÜTLICHKEIT</small><h1>Pits WunderBar</h1><div class="sub">Café – Bodega – Allerlei</div><p>Leckere und ausgefallene Weine für Euch. Stellt Euch Eure Auswahl zusammen und schickt uns die Bestellung per Mail. <em>Wir freuen uns auf Euch!</em></p></header>
+<div class="adm" id="admb" hidden><button id="tg" type="button">⚙ Admin-Bereich öffnen/schließen</button>
+<div class="panel" id="ap" hidden style="margin-top:8px"><h2>Weine verwalten</h2>
+<p class="note">Excel-Datei (.xls/.xlsx) mit den Spalten Produzent, Wein, Weinart, Land, Besonderheit, Menge, Preis, Wein-Beschreibung. Weitere Spalten werden ignoriert. Änderungen gelten erst, wenn Sie die neue index.html herunterladen und auf GitHub hochladen.</p>
+<div class="row"><div><label for="up">Excel hochladen</label><input id="up" type="file" accept=".xls,.xlsx"></div><div><label for="um">Modus</label><select id="um"><option value="r">Alle Weine ersetzen</option><option value="m">Zusammenführen (Produzent + Wein)</option></select></div></div>
+<div class="row" style="margin-top:8px"><button id="nw" type="button">+ Neuer Wein</button><button id="pb" type="button" class="btn gold" style="margin:0">index.html herunterladen</button><span class="note" id="as"></span></div>
+<div id="ef" class="fg" hidden></div><div class="row" id="eb" hidden><button id="es" type="button">Wein übernehmen</button><button id="ec" type="button">Abbrechen</button></div>
+<div class="sc" style="margin-top:10px"><table><thead><tr><th>Produzent</th><th>Wein</th><th>Menge</th><th>Preis</th><th></th></tr></thead><tbody id="at"></tbody></table></div></div></div>
+<main><section>
+<div class="panel filters" id="f">
+<div class="wide"><label for="q">Suche (Produzent, Wein, Besonderheit, Beschreibung)</label><input id="q" type="search" placeholder="z. B. Sangiovese, Bolgheri, Barolo …"></div>
+<div><label for="win">Produzent</label><select id="win"></select></div>
+<div><label for="art">Weinart</label><select id="art"></select></div>
+<div><label for="land">Land</label><select id="land"></select></div>
+<div><label for="be">Besonderheit</label><select id="be"></select></div>
+<div><label for="me">Menge</label><select id="me"></select></div>
+<div><label for="pmin">Preis ab (€)</label><input id="pmin" type="number" min="0" placeholder="0"></div>
+<div><label for="pmax">Preis bis (€)</label><input id="pmax" type="number" min="0" placeholder="∞"></div>
+<div><label for="so">Sortierung</label><select id="so"><option value="n">Wein A–Z</option><option value="w">Produzent A–Z</option><option value="pa">Preis aufsteigend</option><option value="pd">Preis absteigend</option></select></div>
+<div class="row"><button id="rs" type="button">Zurücksetzen</button></div>
+</div>
+<div class="bar"><span id="cnt"></span></div><div class="grid" id="g"></div></section>
+<aside><div class="panel"><h2>Ihre Bestellung</h2><div id="cart"></div>
+<div class="sum"><span>Flaschen</span><b id="nb">0</b></div><div class="sum"><span>Gesamtpreis (inkl. MwSt.)</span><span class="tot" id="tot">0,00 €</span></div><div class="note" id="dn"></div></div>
+<div class="panel"><h2>Ihre Daten</h2>
+<label for="cn">Name *</label><input id="cn" autocomplete="name"><label for="ct" style="margin-top:8px">Telefon</label><input id="ct" type="tel" autocomplete="tel">
+<label for="cv" style="margin-top:8px">Übergabe</label><select id="cv"><option>Abholung in der Enoteca Blu</option><option>Lieferung (donnerstags, ab 100 € Warenwert)</option></select>
+<label for="ca" style="margin-top:8px">Lieferadresse (bei Lieferung)</label><textarea id="ca" style="height:60px;font:inherit"></textarea>
+<label for="cb" style="margin-top:8px">Bemerkung</label><textarea id="cb" style="height:60px;font:inherit"></textarea>
+<a class="btn gold" id="mail" href="#" target="_blank" rel="noopener">Bestellung per E-Mail senden</a><div class="lk"><a class="btn" id="gm" href="#" target="_blank" rel="noopener">Gmail</a><a class="btn" id="ol" href="#" target="_blank" rel="noopener">Outlook.com</a></div><button class="btn" id="cp" type="button" style="width:100%">E-Mail-Text kopieren</button>
+<div class="note" id="ms"></div><details style="margin-top:8px"><summary class="note">Vorschau der Mail</summary><textarea id="pv" readonly></textarea></details></div></aside></main>
+<footer><b>Pits WunderBar</b> · Tatjana + Pit · Mobil +49 (0)1738042013<br>Preise inkl. MwSt. Die Bestellung ist unverbindlich und wird von uns per Mail bestätigt.</footer>
+<script id="wd" type="application/json">[{"w": "Celler de Capcanes", "n": "Mas Donis", "a": "Weiss", "l": "Spanien", "b": "", "m": "0,75l", "p": 6.7, "d": "Tolles Preisverhältniss - Trauben: Grenache Blanc, Macabeo, 13% Alc."}, {"w": "Celler de Capcanes", "n": "Mas Donis rose", "a": "Rose", "l": "Spanien", "b": "", "m": "0,75l", "p": 6.7, "d": "Tolles Preisverhältniss - Shiraz/Syrah, Merlot, Grenache, 13% Alc."}, {"w": "Celler de Capcanes", "n": "Mas Picosa de Flor en Flor - weiss", "a": "Weiss", "l": "Spanien", "b": "", "m": "0,75l", "p": 6.9, "d": "Tolles Preisverhältniss - Gernache-Traube, 13,2%Alc."}, {"w": "Celler de Capcanes", "n": "Mas Picosa Negres", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 6.9, "d": "Tolles Preisverhältniss - Shiraz/Syrah, Merlot, Grenache"}, {"w": "Celler de Capcanes", "n": "Mas Picosa Blanc de negre", "a": "Weiss", "l": "Spanien", "b": "", "m": "0,75l", "p": 6.4, "d": "ausgewogener, weicher (Sommer)-Wein, 12,5% Alc. Grenache-Traube"}, {"w": "Celler de Capcanes", "n": "Mas Donis", "a": "Rot", "l": "Spanien", "b": "2024", "m": "0,75l", "p": 6.5, "d": "Tolle Preis-Leistung - Cuvee:Tempranillo, Shiraz, Grenache, Merlot - 13,5% Alc"}, {"w": "Celler de Capcanes", "n": "La Nit", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 9.9, "d": "Garnacha Traube - 4 vreschiedene Böden möglich, gibt’s auch im 4-er Geschenkpack (siehe weiter unten)"}, {"w": "Celler de Capcanes", "n": "Mas Collet - Selecion", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 8.6, "d": "Toller Cuvee - \tCariñena, Tempranillo, Cabernet Sauvignon - sehr gutes Preis-Leisungsverhältnis!"}, {"w": "Celler de Capcanes", "n": "Mas Collet - Selecion", "a": "Rot", "l": "Spanien", "b": "", "m": "0,375l", "p": 5.5, "d": "kleine Flasche"}, {"w": "Celler de Capcanes", "n": "Lasendal Selecion", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 8.3, "d": "Garnacha(Grenache) -Traube, typisch für die Region, sehr ausgewogener und sanfter Rotwein"}, {"w": "Celler de Capcanes", "n": "Costers del Gravet", "a": "Rot", "l": "Spanien", "b": "Einzellage", "m": "0,75l", "p": 11.5, "d": "Cuvee - Cariñena, Cabernet Sauvignon, Grenache"}, {"w": "Celler de Capcanes", "n": "Flor de primavera Peraj Ha`bib", "a": "Rot", "l": "Spanien", "b": "Koscher Wein", "m": "0,75l", "p": 22.5, "d": "Cabernet Sauvignon, Grenache - 14,8%Alc…vielschichtig, kraftvoll, Leder, Erde, Schokolade - toller Rotwein - alte Reben -Tolle Geschichte hinter dem Wein - KOSCHER!!!!"}, {"w": "Celler de Capcanes", "n": "Cabrida", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 29.0, "d": "Traube: Garnacha - Top Wein! 14,8% Alc. Leder, Pflaume, Kirsche, Kaffee; Der Cabrida findet sich jedes Jahr unter den Topweinen Spaniens, aktuell beim Decanter 95 Punkte"}, {"w": "Celler de Capcanes", "n": "Mas Torto - rot -", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 17.9, "d": "Toller Wein! Kleiner Geheimtip! Cuvee aus Carinena, Garnacha und Cabernet Sauvignon. Alc.: 15%, 5gSäure, dunkle Früchte, Zartbitterschokolade, Vanille"}, {"w": "Celler de Capcanes", "n": "Pansal del calas", "a": "Rot", "l": "Spanien", "b": "2017", "m": "0,5l", "p": 17.86, "d": "Exclusiver Süßwein, Garnacha 70% + Carinena 30%, 15 Monate im Fass, sehr konzentrierter Wein, 16,5% Alc."}, {"w": "Celler de Capcanes", "n": "Cava", "a": "Weiss", "l": "Spanien", "b": "", "m": "0,75l", "p": 10.5, "d": "Flaschengärung nach Champagner Art, über 3 Jahre auf der Hefe!"}, {"w": "Celler de Capcanes", "n": "Vermut", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 9.7, "d": "toller Vermut,auch  gut zum Mixen mit Tonic+Zitrone"}, {"w": "Celler de Capcanes", "n": "Vermut weiss", "a": "Weiss", "l": "Spanien", "b": "Neu im Programm", "m": "0,75l", "p": 9.7, "d": "relativ selten, weisser Vermut.."}, {"w": "Celler de Capcanes", "n": "La Nit gross", "a": "Rot", "l": "Spanien", "b": "4-er Pack gross  0,75l * 4 Geschenkpack.", "m": "0,75l", "p": 39.0, "d": "Tolle Geschenkpackung! 4 Weinflaschen, gleiche Rebe aber unterschiedliche Böden! Toller Wein, 30-40 Jahre alte Reben"}, {"w": "Celler de Capcanes", "n": "La Nit klein", "a": "Rot", "l": "Spanien", "b": "4-er Pack klein  0,375 l  *4 - Geschenkp.", "m": "0,375l", "p": 29.5, "d": "Tolle Geschenkpackung!"}, {"w": "Celler de Capcanes", "n": "Olivenöl", "a": "Sonstiges", "l": "Spanien", "b": "5Liter Kanister, 2026", "m": "5L", "p": 70.0, "d": "Top Öl! Da die Lese erst jetzt stattgefunden hat, ist das Öl unfiltriert! In 2 Monaten kann man dann auch filtriertes Öl bekommen. Dieses Öl wird aus Oliven von 200 bis 250 Jahre alten Olivenbäumen gewonnen, die hauptsächlich (85%) der Sorte Arbequina angehören."}, {"w": "Celler de Capcanes", "n": "Mas dels Ponts", "a": "Rot", "l": "Spanien", "b": "3l Box", "m": "3l", "p": 16.0, "d": "kann mind. bis 6 Wochen nach Öffnen noch getrunkebnwerden - z.B. für Camper"}, {"w": "Celler de Capcanes", "n": "Garnacha Dolce", "a": "Rot", "l": "Spanien", "b": "Roter Süsswein", "m": "0,75l", "p": 11.0, "d": "Toller Aperitiv, 16,5%, Lieblicher Dessertwein mit einem Hauch von leichter Vermut-Gesschmack -"}, {"w": "Heras Cordon", "n": "HC Crianza", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 9.6, "d": "Weicher Rioja - Cuvee - Handlese, mind. 60 Jahre alte Reben! Pflaume, Zimt Kakao. Alk.: 14%"}, {"w": "Heras Cordon", "n": "HC Reserva", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 14.2, "d": "Unser Klassiker aus der Rioja, alte Reben, Handlese, Erstbelegung Eichenfass, Toller Rotwein - Super Preis Leistung! Kräftige Brombeernote, Lakritz - Cuvee - trocken. Alc.: 14,5%"}, {"w": "Heras Cordon", "n": "HC Excellente -", "a": "Rot", "l": "Spanien", "b": "", "m": "0,75l", "p": 29.0, "d": "100% tempranillo, 80-100 Jahre alte Reben! Handlese -  Exotische, reife Früchte Alc.: 15% Sehr ausgeglichene Holznote - Top Wein!"}, {"w": "Heras Cordon", "n": "HC Magnum Crianza - 1,5l", "a": "Rot", "l": "Spanien", "b": "", "m": "1,5l", "p": 24.0, "d": "Weicher Rioja - Cuvee - Handlese, mind. 60 Jahre alte Reben! Pflaume, Zimt Kakao. Alk.: 14%"}, {"w": "Heras Cordon", "n": "HC Magnum Reserva - 1,5l", "a": "Rot", "l": "Spanien", "b": "", "m": "1,5l", "p": 31.0, "d": "Unser Klassiker aus der Rioja, alte Reben, Handlese, Erstbelegung Eichenfass, Toller Rotwein - Super Preis Leistung! Kräftige Brombeernote, Lakritz - Cuvee - trocken. Alc.: 14,5%"}, {"w": "Plansel", "n": "Selected Verdelho", "a": "Weiss", "l": "Portugal", "b": "", "m": "0,75l", "p": 8.5, "d": "Traube: Verdelho - Alc.: 12,5%, Zitrusfrüchte tropische Aromen"}, {"w": "Plansel", "n": "Trincadiera", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 8.7, "d": "Tolle Preis-Leistung - Traube: 100% Trincadeira, Alc.: 15%, 8 Monate Barrique, Wald- und Beerenfrüchte"}, {"w": "Plansel", "n": "Viosinho", "a": "Weiss", "l": "Portugal", "b": "", "m": "0,75l", "p": 8.5, "d": "Intensive Fruchtaromen. Traube:100% Visosinho, Zitrusaromen, Alc.: 12,5%"}, {"w": "Plansel", "n": "Selecta - Reserva Tinto", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 9.6, "d": "Traube: 50% Aragonez, 50% Tinta Barroca, Alc.: 14%, 12 Monate franz. Barrique, Wald- und Beerenfrüchte, Vanille, leichte Schokolade"}, {"w": "Plansel", "n": "Reserva Branco", "a": "Weiss", "l": "Portugal", "b": "", "m": "0,75l", "p": 9.5, "d": "Traube: Gouveio und Viosinho, Handlese, Alc.: 13%, 9 Monate franz. Barrique - viel Frucht, dicht und elegant."}, {"w": "Plansel", "n": "Touriga Nacional", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 14.9, "d": "Traube: Touriga National, Feige, Mokka, Beeren Orange,Alc.: 15% - 10.000 Flaschen - 6 Monate franz. Eiche"}, {"w": "Plansel", "n": "Julia Lindemann", "a": "Rot", "l": "Portugal", "b": "Leider ausverkauft - wird nur alle 3-4 Jahre produziert", "m": "0,75l", "p": 29.5, "d": "Limitiert auf 3000 Flaschen, Trauben: Touriga Nacional + Tinta Barroca, Alc.: 16% sehr komlexe und intensive Aromen, Wildfrüchte und reife Pflaumen und Schokolade - geht in Richtung Amarone-Wein"}, {"w": "Plansel", "n": "Luisa Lindemann", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 29.5, "d": "3.000 Flaschen, Traube: 100% Alicante Bouschet, dunkle Beeren, Schokolade, komplexe Strukturen. Alc.: 15% Gold bei Mundus Vini"}, {"w": "Plansel", "n": "Grande Escolha Selecta - nur noch 50 Flaschen verfügbar!", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 37.0, "d": "Aussergewöhlich! Für den Preis unschlagbar! Wald- und Beerenfrüchte, Schokolade... Goldmedaillie bei Mundus Vini, Traube: Tinta Barokka, Tour. National, Touriga Franca. Alc.: 16%, Jahrg. 2022 - Grosses Potential, sehr lange lagerbar!"}, {"w": "Plansel", "n": "Plansel - 25 Jahre Sonderedition", "a": "Rot", "l": "Portugal", "b": "", "m": "0,75l", "p": 85.0, "d": "Weltklasse! Jahrg.: 2017, grossartiger limitierter Wein! 1000 Flaschen - tiefe schwarze Früchte, voluminös, reife Pflaumen, Leder, Tabak Alc.: 16,5% Traube: Cuvee aus den besten Reben des Weinguts"}, {"w": "Plansel", "n": "Selecta Rose -\" Plansel1\"", "a": "Rose", "l": "Portugal", "b": "", "m": "0,75l", "p": 7.5, "d": "Frischer Rose, Erdbeere/melone, wenig Säure Traube: Aragonez+Castelao Alc.: 11,5%"}, {"w": "Plansel", "n": "Rose \"Plansel2 - Special edition\"", "a": "Rose", "l": "Portugal", "b": "", "m": "0,75l", "p": 11.5, "d": "Traube: 100% Touriga National, Alc.: 12%, Auflage 2000 Flaschen, ggf. ausverkauft"}, {"w": "Plansel", "n": "Olivenöl", "a": "Sonstiges", "l": "Portugal", "b": "", "m": "5l", "p": 70.0, "d": "es kann sein, dass das Öl noch nicht abgefüllt ist, daher Bestellung nur auf Vorbehalt. Die Olivenbäume sind teilweise über 500 Jahre alt!"}]</script>
+<script>
+const SRC="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
+const F=["w","n","a","l","b","m","p","d"];
+const prep=w=>w;
+let W=JSON.parse(document.getElementById("wd").textContent);W.forEach(prep);W.forEach((w,i)=>w.id=i);
+const TO="Thomas.Kaiser1709@live.com",$=s=>document.getElementById(s),cart={};
+const eur=n=>n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uniq=f=>[...new Set(W.flatMap(w=>[].concat(f(w))))].filter(Boolean).sort((a,b)=>a.localeCompare(b,"de"));
+const sets=()=>({art:["Weinarten",uniq(w=>w.a)],land:["Länder",uniq(w=>w.l)],win:["Produzenten",uniq(w=>w.w)],be:["Besonderheiten",uniq(w=>w.b)],me:["Mengen",uniq(w=>w.m)]});
+function buildSel(){const S=sets();for(const k in S){const c=$(k).value;$(k).innerHTML='<option value="">Alle '+S[k][0]+"</option>"+S[k][1].map(v=>"<option>"+esc(v)+"</option>").join("");$(k).value=c}}buildSel();
+const COL={"Rot":"#7b1e2b","Weiss":"#d9c36a","Weiß":"#d9c36a","Rose":"#e59aa4","Rosé":"#e59aa4"};
+const bottle=a=>{const c=COL[a]||"#c9a95c";return '<svg viewBox="0 0 40 110" aria-hidden="true"><path d="M16 2h8v22c0 8 10 14 10 30v48a6 6 0 0 1-6 6H12a6 6 0 0 1-6-6V54c0-16 10-22 10-30z" fill="'+c+'" stroke="#b8955a" stroke-width="1.5"/><rect x="9" y="62" width="22" height="26" rx="2" fill="#f6f1e7" opacity=".85"/></svg>'};
+function flt(){const q=$("q").value.toLowerCase().trim(),v=k=>$(k).value,pa=parseFloat($("pmin").value),pb=parseFloat($("pmax").value);
+let r=W.filter(w=>(!q||[w.w,w.n,w.a,w.l,w.b,w.d].join(" ").toLowerCase().includes(q))&&(!v("art")||w.a==v("art"))&&(!v("land")||w.l==v("land"))&&(!v("win")||w.w==v("win"))&&(!v("be")||w.b==v("be"))&&(!v("me")||w.m==v("me"))&&(isNaN(pa)||w.p>=pa)&&(isNaN(pb)||w.p<=pb));
+const s=v("so");r.sort((a,b)=>s=="pa"?a.p-b.p:s=="pd"?b.p-a.p:s=="w"?a.w.localeCompare(b.w,"de"):a.n.localeCompare(b.n,"de"));return r}
+function draw(){const r=flt();$("cnt").textContent=r.length+" von "+W.length+" Weinen";
+$("g").innerHTML=r.map(w=>`<article class="card ${cart[w.id]?"sel":""}">${bottle(w.a)}<div class="w">${esc(w.w)}</div><h3>${esc(w.n)}</h3>
+<div class="tags">${w.a?`<span>${esc(w.a)}</span>`:""}<span>${esc(w.l)}</span><span>${esc(w.m)}</span></div>
+${w.b?`<div class="stock">Besonderheit: ${esc(w.b)}</div>`:""}<div class="d">${esc(w.d)}</div>
+<div class="row" style="justify-content:space-between;align-items:center"><div class="pr">${eur(w.p)} <small>/ ${esc(w.m||"Flasche")}</small></div>
+<div class="qty"><button type="button" data-id="${w.id}" data-d="-1" aria-label="Weniger">−</button><b>${cart[w.id]||0}</b><button type="button" data-id="${w.id}" data-d="1" aria-label="Mehr">+</button></div></div></article>`).join("")||'<div class="panel">Keine Weine für diese Auswahl gefunden.</div>'}
+function sumup(){const L=W.filter(w=>cart[w.id]);let nb=0,t=0;
+$("cart").innerHTML=L.map(w=>{nb+=cart[w.id];t+=cart[w.id]*w.p;return`<div class="it"><span>${cart[w.id]} × ${esc(w.n)}</span><b>${eur(cart[w.id]*w.p)}</b></div>`}).join("")||'<div class="note">Noch keine Weine ausgewählt.</div>';
+$("nb").textContent=nb;$("tot").textContent=eur(t);
+const del=$("cv").selectedIndex==1;$("dn").innerHTML=del?(t<100?'<span class="warn">Mindestbestellwert für Lieferung: 100 € (es fehlen '+eur(100-t)+').</span>':"Lieferung donnerstags – Mindestbestellwert erreicht."):"";
+const nm=$("cn").value.trim(),lines=["Guten Tag,","","hiermit bestelle ich folgende Weine:",""];
+L.forEach((w,i)=>lines.push((i+1)+". "+cart[w.id]+" × "+w.n+" ("+w.w+(w.a?", "+w.a:"")+", "+w.m+") à "+eur(w.p)+" = "+eur(cart[w.id]*w.p)));
+lines.push("","Flaschen gesamt: "+nb,"Gesamtpreis: "+eur(t),"","Übergabe: "+$("cv").value);
+if(del&&$("ca").value.trim())lines.push("Lieferadresse: "+$("ca").value.trim());
+if($("cb").value.trim())lines.push("Bemerkung: "+$("cb").value.trim());
+lines.push("","Bitte bestätigen Sie mir die Verfügbarkeit und den Termin.","","Vielen Dank und freundliche Grüße",nm,$("ct").value.trim()?"Tel.: "+$("ct").value.trim():"");
+const body=lines.join("\r\n"),sub="Weinbestellung"+(nm?" – "+nm:""),ok=nb>0&&nm&&!(del&&t<100);
+$("pv").value="An: "+TO+"\nBetreff: "+sub+"\n\n"+body;
+const a=$("mail");a.href="mailto:"+TO+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(body);$("gm").href="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(TO)+"&su="+encodeURIComponent(sub)+"&body="+encodeURIComponent(lines.join("\n"));$("ol").href="https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(TO)+"&subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(lines.join("\n"));[a,$("gm"),$("ol")].forEach(x=>{x.setAttribute("aria-disabled",ok?"false":"true");x._ok=ok});a.setAttribute("aria-disabled",ok?"false":"true");
+$("ms").textContent=ok?"":(nb?(nm?"Bitte Lieferbedingungen beachten.":"Bitte Ihren Namen angeben."):"Bitte zuerst Weine auswählen.");window._mail=$("pv").value}
+["mail","gm","ol"].forEach(i=>$(i).onclick=e=>{if(!e.currentTarget._ok)e.preventDefault()});
+$("cp").onclick=async()=>{try{await navigator.clipboard.writeText(window._mail);$("ms").textContent="Text kopiert – bitte in Ihr Mailprogramm einfügen."}catch(e){$("ms").textContent="Kopieren nicht möglich – bitte Text aus der Vorschau markieren."}};
+$("g").onclick=e=>{const b=e.target.closest("button[data-id]");if(!b)return;const i=b.dataset.id,n=Math.max(0,(cart[i]||0)+ +b.dataset.d);n?cart[i]=n:delete cart[i];draw();sumup()};
+$("f").addEventListener("input",draw);["cn","ct","ca","cb","cv"].forEach(i=>$(i).addEventListener("input",sumup));
+$("rs").onclick=()=>{$("f").querySelectorAll("input,select").forEach(e=>e.value=e.tagName=="SELECT"&&e.id=="so"?"n":"");draw()};
+let dirty=false,ed=-1;
+const strip=w=>{const o={};F.forEach(k=>o[k]=w[k]??"");return o};
+const num=v=>{if(typeof v=="number")return v;let s=String(v).replace(/[^\d.,]/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");return Math.round((parseFloat(s)||0)*100)/100};
+function changed(){dirty=true;W.forEach((w,i)=>{prep(w);w.id=i});buildSel();draw();sumup();radm();$("as").textContent="Ungespeicherte Änderungen – bitte „index.html herunterladen“ klicken."}
+function radm(){$("at").innerHTML=W.map((w,i)=>`<tr><td>${esc(w.w)}</td><td>${esc(w.n)}</td><td>${esc(w.m)}</td><td>${eur(w.p)}</td><td><button class="mini" data-e="${i}">Bearbeiten</button> <button class="mini" data-x="${i}">Löschen</button></td></tr>`).join("")}
+const LB={w:"Produzent",n:"Wein",a:"Weinart",l:"Land",b:"Besonderheit",m:"Menge",p:"Preis in €",d:"Wein-Beschreibung"};
+function openEd(i){ed=i;const w=i>=0?W[i]:{};$("ef").innerHTML=F.map(k=>`<div><label>${LB[k]}</label><input data-k="${k}" value="${esc(w[k]??"")}"></div>`).join("");$("ef").hidden=$("eb").hidden=false}
+function closeEd(){$("ef").hidden=$("eb").hidden=true}
+$("tg").onclick=()=>{$("ap").hidden=!$("ap").hidden;radm()};
+$("nw").onclick=()=>openEd(-1);$("ec").onclick=closeEd;
+$("es").onclick=()=>{const o={};$("ef").querySelectorAll("input").forEach(i=>o[i.dataset.k]=i.value.trim());o.p=num(o.p);if(!o.n){$("as").textContent="Bitte einen Namen angeben.";return}ed>=0?W[ed]=o:W.push(o);closeEd();changed()};
+$("at").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.e!=null)openEd(+b.dataset.e);else if(b.dataset.x!=null&&confirm("Wein wirklich löschen?")){W.splice(+b.dataset.x,1);changed()}};
+$("up").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});
+const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});const K={produzent:"w",wein:"n",weinart:"a",land:"l",besonderheit:"b",menge:"m",preis:"p","wein-beschreibung":"d",beschreibung:"d"};
+const L=rows.map(r=>{const o={};F.forEach(k=>o[k]="");for(const h in r){const k=K[h.trim().toLowerCase()];if(k)o[k]=String(r[h]).trim()}o.p=num(o.p);return o}).filter(o=>o.n);
+if(!L.length)throw new Error("Keine Weine gefunden – Spaltenüberschriften prüfen.");
+if($("um").value=="r")W=L;else L.forEach(o=>{const i=W.findIndex(w=>w.n.toLowerCase()==o.n.toLowerCase()&&w.w.toLowerCase()==o.w.toLowerCase());i>=0?W[i]=o:W.push(o)});
+changed();$("as").textContent=L.length+" Weine aus „"+f.name+"“ geladen. Ungespeicherte Änderungen – bitte „index.html herunterladen“ klicken."}catch(x){$("as").textContent="Fehler beim Lesen: "+x.message}e.target.value=""};
+$("pb").onclick=()=>{const a="<scr"+'ipt id="wd" type="application/json">',i=SRC.indexOf(a),j=SRC.indexOf("</scr"+"ipt>",i);
+const html=SRC.slice(0,i+a.length)+JSON.stringify(W.map(strip)).replace(/</g,"\\u003c")+SRC.slice(j);
+const u=URL.createObjectURL(new Blob([html],{type:"text/html"})),l=document.createElement("a");l.href=u;l.download="index.html";document.body.appendChild(l);l.click();l.remove();
+dirty=false;$("as").textContent="index.html heruntergeladen – bitte auf GitHub hochladen und die alte Datei ersetzen."};
+if(/admin/.test(location.search+location.hash))$("admb").hidden=false;
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault()}});
+draw();sumup();
+</script></body></html>
